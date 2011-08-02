@@ -1,3 +1,23 @@
+//Das Array in dem alle Layers gespeichert sind.
+drawing = [];
+
+//Ein Assoziatives array  'Layer_name'->Layer_index
+layers = [];
+
+function message_to_main(cmd, daten){
+	self.postMessage({'cmd': cmd, 'daten': daten});
+}
+
+self.onmessage = function(event) {
+	 if (event.data.cmd == 'laden'){
+	 dxf_laden(event.data.daten);
+	 message_to_main('fertig',[drawing,layers]);
+	 self.close();
+	 return
+	 }
+	 throw "Keine gueltige Message an Worker";	 
+};
+
 //Einstieg in die Verarbeitung einer dxf-Datei 
 // Bekommt dxf-Datei als Text 
 function dxf_laden(text){
@@ -71,7 +91,7 @@ var sections = [];
 }
 
 function parse_dxf_header(Data){
-console.log("parse Header")
+//console.log("parse Header")
 	//Probleme mit Zwei Werten für eine Variable -> alles durcheinander
 //	dxf_header_vars = Array();
 //	for (var i= 0; i < Data.length; i = i+2){
@@ -111,7 +131,7 @@ function parse_dxf_entities(Data){
 	while (Data.length > 1){
 		var temp_entity = [];
 		var name;
-		if (Data[0][0] != "0") console.log("Entities Error 1");
+		//if (Data[0][0] != "0") console.log("Entities Error 1");
 		name = Data[0][1]
 		Data.shift(); //0 Type Zeile löschen
 		while ((Data[0][0] != "0") && (Data.length > 1)){
@@ -120,7 +140,6 @@ function parse_dxf_entities(Data){
 		}
 		parse_single_entity(name, temp_entity);
 	}
-	draw();
 	// if (name == 'POLYLINE'){
 		// entity.children = [];
 		// var temp_entity2 = [];
@@ -132,7 +151,7 @@ function parse_dxf_entities(Data){
 }
 
 function parse_dxf_tables(Data){
-console.log('parse tables');
+//console.log('parse tables');
 }
 
 function parse_single_entity(entity_name, single_entity){
@@ -159,7 +178,7 @@ function parse_single_entity(entity_name, single_entity){
 		drawing[layer(fertig.layer_name)].push(fertig);
 		return
 	}
-	console.log("Entitytyp wird nicht unterstuetzt:"+entity_name);
+	//console.log("Entitytyp wird nicht unterstuetzt:"+entity_name);
 }
 
 function dxf_group_codes_parse(daten){

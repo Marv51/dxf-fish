@@ -37,7 +37,7 @@ function handleFiles(files) {
 	 var f = files[0];
 	 var reader = new FileReader();
       reader.onload = function(e) {
-	  dxf_laden(e.target.result);
+	  dxf_lesen(e.target.result);
 	  };
       reader.readAsText(f);
 }
@@ -63,4 +63,28 @@ function sprinkler_starten(){
 		ctx.fill();
 		console.log(e);
 	});
+}
+
+function dxf_lesen(text){
+worker = new Worker("js/dxf-reader.js");
+worker.addEventListener('message',message_from_worker, false);
+worker.addEventListener('error',error_in_worker, false);
+message_to_worker('laden',text);
+}
+
+function message_to_worker(cmd, daten){
+	worker.postMessage({'cmd': cmd, 'daten': daten});
+}
+
+function message_from_worker(event){
+	if (event.data.cmd == 'fertig'){
+		 drawing = event.data.daten[0];
+		 layers = event.data.daten[1];
+		 draw();
+		 return
+	 }
+}
+
+function error_in_worker(){
+
 }
