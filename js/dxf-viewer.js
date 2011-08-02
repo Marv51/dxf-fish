@@ -4,9 +4,19 @@ drawing = [];
 //Ein Assoziatives array  'Layer_name'->Layer_index
 layers = [];
 
+canvas_breite = 1000;
+canvas_hoehe = 600;
+
 view_x = 150;
-view_y = 500;
+view_y = canvas_hoehe/2;
 view_scale = 12;
+
+model_min_x = 0;
+model_max_x = 0;
+model_min_y = 0;
+model_max_y = 0;
+
+auto_scale = true;
 
 function activate_controls(){
 
@@ -51,12 +61,36 @@ function activate_controls(){
 			layers[layer_id].active = true;
 			redraw();
 	});
-	
+	if (auto_scale)
+	do_auto_scale();
 	sprinkler_starten();
 }
 
+function do_auto_scale(){
+	console.log("min_y"+model_min_y+"max_y"+model_max_y+"min_x"+model_min_x+"max_x"+model_max_x)
+	auto_scale = false;
+	//ctx.fillStyle = "rgb(200,0,0)";
+    //ctx.fillRect (x(model_min_x), y(model_min_y), x(model_max_x), y(model_max_y));
+	ctx.beginPath();
+	ctx.arc(x(0)-2.5,y(0)-2.5,5,0,(Math.PI/180)*360,true);
+	ctx.stroke();
+	var breite = model_max_x - model_min_x;
+	var scale_nach_breite = (canvas_breite-10)/breite;
+	var hoehe = model_max_y - model_min_y;
+	var scale_nach_hoehe = (canvas_hoehe-10)/hoehe;
+	if (scale_nach_hoehe < scale_nach_breite) {
+	view_scale = scale_nach_hoehe;
+	} else {
+	view_scale = scale_nach_breite;
+	}
+	console.log(view_scale);
+	view_x = - scale(model_min_x)+5;
+	view_y = (- scale(model_min_y))/2 + 5;	
+	redraw();
+}
+
 function redraw(){
-	ctx.clearRect(0, 0, 1000, 1000);
+	ctx.clearRect(0, 0, 1000, 600);
 	//Für jedes Layer
 	//var i = 3;
 	for (var i = 0; drawing.length > i; i++){
@@ -82,7 +116,6 @@ function draw(){
 }
 
 function element_zeichnen(element){
-//console.log(element);
 	if (element.type == "LINE"){
 		draw_line(element);
 		return
@@ -161,10 +194,19 @@ function draw_line(element){
 // }
 
 function x(wert){
+	if (wert < model_min_x) {
+		model_min_x = wert;
+	};
+	if (wert > model_max_x) {
+		model_max_x = wert;
+	};
 	return scale(wert)+view_x;
 }
+
 function y(wert){
-	return scale(wert)+view_y;
+	if (wert < model_min_y) model_min_y = wert;
+	if (wert > model_max_y) model_max_y = wert;
+	return  - (scale(wert))+view_y;
 }
 
 function scale(wert){

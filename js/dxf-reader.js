@@ -199,27 +199,27 @@ function dxf_group_codes_parse(daten){
 			fertig.color = daten[0][1];
 		}
 		if (daten[0][0] == "10" ){//x1
-			fertig.x1 = daten[0][1];
+			fertig.x1 = parseFloat(daten[0][1]);
 		}
 		if (daten[0][0] == "11" ){//x2
-			fertig.x2 = daten[0][1];
+			fertig.x2 = parseFloat(daten[0][1]);
 		}
 		if (daten[0][0] == "20" ){ //y1
-			fertig.y1 = daten[0][1];
+			fertig.y1 = parseFloat(daten[0][1]);
 		}
 		if (daten[0][0] == "21" ){ //y2
-			fertig.y2 = daten[0][1];
+			fertig.y2 = parseFloat(daten[0][1]);
 		}
 		if (daten[0][0] == "39" ){ //thickness
 			fertig.thickness = daten[0][1];
 		}
 		if (daten[0][0] == "40" ){ //radius
-			fertig.radius = daten[0][1];
+			fertig.radius = parseFloat(daten[0][1]);
 		}
-		if (daten[0][0] == "50" ){ //radius
+		if (daten[0][0] == "50" ){ //start winkel
 			fertig.start_winkel = daten[0][1];
 		}
-		if (daten[0][0] == "51" ){ //radius
+		if (daten[0][0] == "51" ){ //end winkel
 			fertig.end_winkel = daten[0][1];
 		}
 		if (daten[0][0] == "71" ){ //Verknüpfungspunkt TOP: 1Left 2Center 3Right MIDDLE: 4L 5C 6R Bottom: 7L 8C 9R
