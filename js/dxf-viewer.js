@@ -144,7 +144,25 @@ function element_zeichnen(element){
 }
 
 function draw_text(element){
-	ctx.font = "11px Times New Roman";
+	if ((element.attachment_p == 2)||(element.attachment_p == 5)||(element.attachment_p == 8)){
+		ctx.textAlign = "center";
+	}
+	if ((element.attachment_p == 1)||(element.attachment_p == 4)||(element.attachment_p == 7)){
+		ctx.textAlign = "left";
+	}
+	if ((element.attachment_p == 3)||(element.attachment_p == 6)||(element.attachment_p == 9)){
+		ctx.textAlign = "right";
+	}
+	if (element.attachment_p <= 3){
+		ctx.textBaseline = "bottom";
+	}
+	if (element.attachment_p >= 7 ){
+		ctx.textBaseline = "top";
+	}
+	if ((element.attachment_p < 7 ) && (element.attachment_p > 3 )){
+		ctx.textBaseline = "middle";
+	}
+	ctx.font = scale(element.radius) + "px Times New Roman";
 	ctx.fillStyle = "Black";
 	ctx.fillText(element.text, x(element.x1), y(element.y1));
 }

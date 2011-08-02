@@ -213,7 +213,7 @@ function dxf_group_codes_parse(daten){
 		if (daten[0][0] == "39" ){ //thickness
 			fertig.thickness = daten[0][1];
 		}
-		if (daten[0][0] == "40" ){ //radius
+		if (daten[0][0] == "40" ){ //radius + text height
 			fertig.radius = parseFloat(daten[0][1]);
 		}
 		if (daten[0][0] == "50" ){ //start winkel
