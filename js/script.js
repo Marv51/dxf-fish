@@ -85,6 +85,9 @@ function message_from_worker(event){
 		 draw();
 		 return
 	 }
+	 if (event.data.cmd == 'echo'){
+		console.log(event.data.daten);
+	 }
 }
 
 function error_in_worker(){
@@ -94,6 +97,7 @@ function error_in_worker(){
 function show_loading(){
 $('body').addClass("overlay").append("<img id='loader' src='images/ajax-loader.gif' />");
 }
+
 function finish_loading(){
 $("#loader").remove();
 $('body').removeClass("overlay");
