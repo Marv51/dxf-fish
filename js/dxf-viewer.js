@@ -42,15 +42,28 @@ function activate_controls(){
 		redraw();
 	});
 	
-	$("#zoom_in").click(function(){
-		view_scale = view_scale + 1;
-		redraw();
-	});
-	
-	$("#zoom_out").click(function(){
-		view_scale = view_scale - 1;
-		redraw();
-	});
+	document.getElementById('canvas').addEventListener('DOMMouseScroll', function(e)
+		{
+			if (e.detail > 0){
+				view_scale = view_scale + 1;
+				redraw();
+			} else {
+				view_scale = view_scale- 1;
+				redraw();
+			}
+			e.preventDefault();
+		}, false);
+	document.getElementById('canvas').addEventListener('mousewheel', function(e)
+		{
+			if (e.wheelDelta < 0){
+				view_scale = view_scale + 1;
+				redraw();
+			} else {
+				view_scale = view_scale- 1;
+				redraw();
+			}
+			e.preventDefault();
+		}, false);
 
 	$('.layer_auswahl').change(function(e){
 			var layer_id = e.currentTarget.id.substr(6,(e.currentTarget.id.length-1));
