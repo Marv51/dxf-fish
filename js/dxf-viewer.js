@@ -22,49 +22,39 @@ function activate_controls(){
 
 	add_layer_auswahl();
 
-	$("#left").click(function(){
-		view_x = view_x - 10;
-		redraw();
-	});
-	
-	$("#right").click(function(){
-		view_x = view_x + 10;
-		redraw();
-	});
-	
-	$("#down").click(function(){
-		view_y = view_y + 10;
-		redraw();
-	});
-	
-	$("#up").click(function(){
-		view_y = view_y - 10;
-		redraw();
-	});
-	
 	document.getElementById('canvas').addEventListener('DOMMouseScroll', function(e)
 		{
 			if (e.detail > 0){
-				view_scale = view_scale + 1;
+				view_scale = view_scale - 1;
 				redraw();
 			} else {
-				view_scale = view_scale- 1;
+				view_scale = view_scale+ 1;
 				redraw();
 			}
 			e.preventDefault();
 		}, false);
+		
 	document.getElementById('canvas').addEventListener('mousewheel', function(e)
 		{
 			if (e.wheelDelta < 0){
-				view_scale = view_scale + 1;
+				view_scale = view_scale - 1;
 				redraw();
 			} else {
-				view_scale = view_scale- 1;
+				view_scale = view_scale+ 1;
 				redraw();
 			}
 			e.preventDefault();
 		}, false);
-
+			
+	document.getElementById('canvas').addEventListener('mousedown', function(e){
+			mousemove_x = e.clientX;
+			mousemove_y = e.clientY;
+			document.getElementById('canvas').addEventListener('mousemove', mousemove, false);
+		},false);
+	document.getElementById('canvas').addEventListener('mouseup', function(e){
+			document.getElementById('canvas').removeEventListener('mousemove', mousemove, false);
+		}, false);	
+		
 	$('.layer_auswahl').change(function(e){
 			var layer_id = e.currentTarget.id.substr(6,(e.currentTarget.id.length-1));
 			if (layers[layer_id].active == true){
@@ -79,8 +69,16 @@ function activate_controls(){
 	sprinkler_starten();
 }
 
+function mousemove(e){
+				view_x = view_x - (mousemove_x - e.clientX);
+				view_y = view_y - (mousemove_y - e.clientY);
+				mousemove_x = e.clientX;
+				mousemove_y = e.clientY;
+				redraw();
+}
+
 function do_auto_scale(){
-	console.log("min_y"+model_min_y+"max_y"+model_max_y+"min_x"+model_min_x+"max_x"+model_max_x)
+	//console.log("min_y"+model_min_y+"max_y"+model_max_y+"min_x"+model_min_x+"max_x"+model_max_x)
 	auto_scale = false;
 	//ctx.fillStyle = "rgb(200,0,0)";
     //ctx.fillRect (x(model_min_x), y(model_min_y), x(model_max_x), y(model_max_y));
