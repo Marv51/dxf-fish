@@ -30,10 +30,10 @@ function activate_controls(){
 	document.getElementById('canvas').addEventListener('DOMMouseScroll', function(e)
 		{
 			if (e.detail > 0){
-				view_scale = view_scale - 1;
+				view_scale = view_scale - 2;
 				redraw();
 			} else {
-				view_scale = view_scale+ 1;
+				view_scale = view_scale+ 2;
 				redraw();
 			}
 			e.preventDefault();
@@ -75,11 +75,11 @@ function activate_controls(){
 }
 
 function mousemove(e){
-				view_x = view_x - (mousemove_x - e.clientX);
-				view_y = view_y - (mousemove_y - e.clientY);
-				mousemove_x = e.clientX;
-				mousemove_y = e.clientY;
-				redraw();
+	view_x = view_x - (mousemove_x - e.clientX);
+	view_y = view_y - (mousemove_y - e.clientY);
+	mousemove_x = e.clientX;
+	mousemove_y = e.clientY;
+	redraw();
 }
 
 function do_auto_scale(){
@@ -105,6 +105,7 @@ function redraw(){
 	ctx.clearRect(0, 0, 1000, 600);
 	//Für jedes Layer
 	//var i = 3;
+	//console.log( available_blocks);
 	for (var i = 0; drawing.length > i; i++){
 		if (layers[i].active){
 			for (var a = 0; drawing[i].length > a; a++){
@@ -148,11 +149,80 @@ function element_zeichnen(element){
 		draw_text(element);
 		return
 	}
-		if (element.type == "MTEXT"){
+	if (element.type == "MTEXT"){
 		draw_text(element);
 		return
 	}
+	if (element.type == "INSERT"){
+		draw_insert(element);
+		return
+	}
 
+}
+
+function draw_insert(element){
+var i = 0;
+	//console.log(element.insert_block);
+	while (element.insert_block != available_blocks[i].handle.block_name){
+		i++;
+		if (available_blocks.length == i){
+		console.warn("Block nicht gefunden: " + element.insert_block );
+		return
+		}	
+	}
+	temp_elemente = available_blocks[i].elemente;
+		
+	for (var a = 0; a < temp_elemente.length; a++){
+		temp_elemente[a].type = temp_elemente[a].entity_typ;
+		if ( typeof temp_elemente[a].x_scale == "undefined" )
+		temp_elemente[a].x_scale = 1;
+		if ( typeof temp_elemente[a].y_scale == "undefined" )
+		temp_elemente[a].y_scale = 1;
+		
+		if ( typeof temp_elemente[a].org_x1 == "undefined" ) {
+			temp_elemente[a].org_x1 = temp_elemente[a].x1;
+			}
+		//console.log(temp_elemente[a].start_winkel);
+		//console.log(winkel_in_rad);
+		temp_elemente[a].x1 = element.x1 + rotate_x(temp_elemente[a].org_x1,temp_elemente[a].org_y1,element.start_winkel,temp_elemente[a].x_scale);
+		
+		if ( typeof temp_elemente[a].org_x2 == "undefined" ) {
+			temp_elemente[a].org_x2 = temp_elemente[a].x2;
+			}
+		temp_elemente[a].x2 = element.x1 + rotate_x(temp_elemente[a].org_x2,temp_elemente[a].org_y2,element.start_winkel,temp_elemente[a].x_scale);
+		
+		if ( typeof temp_elemente[a].org_y1 == "undefined" ) {
+			temp_elemente[a].org_y1 = temp_elemente[a].y1;
+			}
+		temp_elemente[a].y1 = element.y1 + rotate_y(temp_elemente[a].org_x1,temp_elemente[a].org_y1,element.start_winkel,temp_elemente[a].y_scale);
+		
+		if ( typeof temp_elemente[a].org_y2 == "undefined" ) {
+			temp_elemente[a].org_y2 = temp_elemente[a].y2;
+			}
+		temp_elemente[a].y2 = element.y1 + rotate_y(temp_elemente[a].org_x2,temp_elemente[a].org_y2,element.start_winkel,temp_elemente[a].y_scale);
+		//console.log(temp_elemente[a]);
+		// if ((typeof temp_elemente[a].org_start_winkel == "undefined") && (element.start_winkel)){
+			// temp_elemente[a].org_start_winkel = temp_elemente[a].start_winkel;
+			// temp_elemente[a].start_winkel = temp_elemente[a].start_winkel + element.start_winkel;
+		// }
+		// if ((typeof temp_elemente[a].org_end_winkel == "undefined") && (element.end_winkel)){
+			// temp_elemente[a].org_end_winkel = temp_elemente[a].end_winkel;
+			// temp_elemente[a].end_winkel = temp_elemente[a].end_winkel + element.start_winkel;
+		// }
+		element_zeichnen(temp_elemente[a]);
+	}	
+}
+
+function rotate_x(x_org,y_org,a_deg,s){
+	if (!a_deg) return x_org;
+	a_rad = (a_deg) * Math.PI / 180; 
+	return x_org*Math.cos(a_rad) - y_org*Math.sin(a_rad);
+}
+
+function rotate_y(x_org,y_org,a_deg,s){
+	if (!a_deg) return y_org;
+	a_rad = (a_deg) * Math.PI / 180; 
+	return x_org*Math.sin(a_rad) + y_org*Math.cos(a_rad);
 }
 
 function draw_text(element){
@@ -181,7 +251,9 @@ function draw_text(element){
 
 function draw_arc(element){
 	ctx.beginPath();
-	ctx.arc(x(element.x1),y(element.y1),scale(element.radius),(Math.PI/180)*element.start_winkel,(Math.PI/180)*element.end_winkel,true);
+	console.log(element.start_winkel+" bis "+element.end_winkel+" org:"+element.org_start_winkel+" bis "+element.org_end_winkel );
+	var clockwise = false; //Aus Header auslesen!
+	ctx.arc(x(element.x1),y(element.y1),scale(element.radius),(Math.PI/180)*(180+element.start_winkel),(Math.PI/180)*(180+element.end_winkel),clockwise);
 	ctx.stroke();
 }
 

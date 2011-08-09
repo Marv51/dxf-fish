@@ -163,10 +163,14 @@ function parse_single_block(block_data){
 		}
 		new_block_data[i].push(block_data[a]); 
 	}
-	if (new_block_data.length >= 3) new_block_data.pop();
+	if (new_block_data.length < 3) return;
+
+	new_block_data.pop();
 	//message_to_main('echo',new_block_data);
 	var this_block = {}
-	this_block.handle = new_block_data[0][0][1];
+	
+	this_block.handle = dxf_group_codes_parse(new_block_data[0]);
+	
 	this_block.elemente = [];
 	for (var a = 1; a < new_block_data.length;a++){
 		this_block.elemente.push(dxf_group_codes_parse(new_block_data[a]));
@@ -228,7 +232,8 @@ function parse_single_entity(entity_name, single_entity){
 			(fertig.type == "ARC")   ||
 			(fertig.type == "CIRCLE")||
 			(fertig.type == "XLINE") ||
-			(fertig.type == "LINE")){
+			(fertig.type == "LINE")  ||
+			(fertig.type == "INSERT")){
 		drawing[layer(fertig.layer_name)].push(fertig);
 		return
 	}
@@ -237,55 +242,65 @@ function parse_single_entity(entity_name, single_entity){
 
 function dxf_group_codes_parse(daten){
 	var fertig = {};
-	while (daten.length != 0){
-		if (daten[0][0] == "0" ){ //Element Typ
-			fertig.entity_typ = daten[0][1];
+	for (var i = 0; i < daten.length; i++){
+	//while (daten.length != 0){
+		if (daten[i][0] == "0" ){ //Element Typ
+			fertig.entity_typ = daten[i][1];
 		}
-		if (daten[0][0] == "1" ){ //text erste 250 zeichen
-			fertig.text = daten[0][1];
+		if (daten[i][0] == "1" ){ //text erste 250 zeichen
+			fertig.text = daten[i][1];
 			fertig.text = fertig.text.slice(1,fertig.text.length).replace(/}/,"");
 		}
-		if (daten[0][0] == "5" ){ //Block name
-			fertig.block_name = daten[0][1];
+		if (daten[i][0] == "2" ){ //Insert Block Name
+			fertig.insert_block = daten[i][1];
 		}
-		if (daten[0][0] == "6" ){ //line type
-			fertig.line_typ = daten[0][1];
+		if (daten[i][0] == "3" ){ //Block name
+			fertig.block_name = daten[i][1];
 		}
-		if (daten[0][0] == "8" ){ //layer_name
-			fertig.layer_name = daten[0][1];
+		if (daten[i][0] == "6" ){ //line type
+			fertig.line_typ = daten[i][1];
+		}
+		if (daten[i][0] == "8" ){ //layer_name
+			fertig.layer_name = daten[i][1];
 			//layer(fertig.layer_name);
 		}
-		if (daten[0][0] == "62" ){ //farbe
-			fertig.color = daten[0][1];
+		if (daten[i][0] == "62" ){ //farbe
+			fertig.color = daten[i][1];
 		}
-		if (daten[0][0] == "10" ){//x1
-			fertig.x1 = parseFloat(daten[0][1]);
+		if (daten[i][0] == "10" ){//x1
+			fertig.x1 = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "11" ){//x2
-			fertig.x2 = parseFloat(daten[0][1]);
+		if (daten[i][0] == "11" ){//x2
+			fertig.x2 = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "20" ){ //y1
-			fertig.y1 = parseFloat(daten[0][1]);
+		if (daten[i][0] == "20" ){ //y1
+			fertig.y1 = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "21" ){ //y2
-			fertig.y2 = parseFloat(daten[0][1]);
+		if (daten[i][0] == "21" ){ //y2
+			fertig.y2 = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "39" ){ //thickness
-			fertig.thickness = daten[0][1];
+		if (daten[i][0] == "39" ){ //thickness
+			fertig.thickness = daten[i][1];
 		}
-		if (daten[0][0] == "40" ){ //radius + text height
-			fertig.radius = parseFloat(daten[0][1]);
+		if (daten[i][0] == "40" ){ //radius + text height
+			fertig.radius = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "50" ){ //start winkel
-			fertig.start_winkel = daten[0][1];
+		if (daten[i][0] == "41" ){ //X Scale
+			fertig.x_scale = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "51" ){ //end winkel
-			fertig.end_winkel = daten[0][1];
+		if (daten[i][0] == "42" ){ //Y Scale
+			fertig.y_scale = parseFloat(daten[i][1]);
 		}
-		if (daten[0][0] == "71" ){ //Verknüpfungspunkt TOP: 1Left 2Center 3Right MIDDLE: 4L 5C 6R Bottom: 7L 8C 9R
-			fertig.attachment_p = daten[0][1];
+		if (daten[i][0] == "50" ){ //start winkel
+			fertig.start_winkel =  parseFloat(daten[i][1]);
 		}
-		daten.shift();
+		if (daten[i][0] == "51" ){ //end winkel
+			fertig.end_winkel =  parseFloat(daten[i][1]);
+		}
+		if (daten[i][0] == "71" ){ //Verknüpfungspunkt TOP: 1Left 2Center 3Right MIDDLE: 4L 5C 6R Bottom: 7L 8C 9R
+			fertig.attachment_p = daten[i][1];
+		}
+		//daten.shift();
 	}
 	return fertig;
 }
