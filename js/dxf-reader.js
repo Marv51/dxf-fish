@@ -190,7 +190,7 @@ function dxf_group_codes_parse(daten){
 		}
 		if (daten[0][0] == "8" ){ //layer_name
 			fertig.layer_name = daten[0][1];
-			layer(fertig.layer_name);
+			//layer(fertig.layer_name);
 		}
 		if (daten[0][0] == "6" ){ //line type
 			fertig.line_typ = daten[0][1];
