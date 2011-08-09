@@ -81,6 +81,7 @@ function message_from_worker(event){
 	if (event.data.cmd == 'fertig'){
 		 drawing = event.data.daten[0];
 		 layers = event.data.daten[1];
+		 available_blocks = event.data.daten[2];
 		 finish_loading();
 		 draw();
 		 return

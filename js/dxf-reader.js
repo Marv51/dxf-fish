@@ -4,6 +4,8 @@ drawing = [];
 //Ein Assoziatives array  'Layer_name'->Layer_index
 layers = [];
 
+available_blocks = [];
+
 function message_to_main(cmd, daten){
 	self.postMessage({'cmd': cmd, 'daten': daten});
 }
@@ -11,7 +13,7 @@ function message_to_main(cmd, daten){
 self.onmessage = function(event) {
 	 if (event.data.cmd == 'laden'){
 	 dxf_laden(event.data.daten);
-	 message_to_main('fertig',[drawing,layers]);
+	 message_to_main('fertig',[drawing,layers,available_blocks]);
 	 self.close();
 	 return
 	 }
@@ -32,20 +34,26 @@ function dxf_laden(text){
 function parse_sections(dxf) {
 //alert('test');
 //console.log(dxf[0][0][1]);
-	for (var i=0; i< dxf.length;i++){
+	for (var i=0; i < dxf.length;i++){
 		var Section_name = dxf[i][0][1];
 		dxf[i].shift();//section Name entfernen 
-		if (Section_name == "HEADER"){
+		
+		/*if (Section_name == "HEADER"){
 			parse_dxf_header(dxf[i]);
 		}
 		if (Section_name == "TABLES"){
 			parse_dxf_tables(dxf[i]);
+		}*/
+		if ( Section_name == "BLOCKS") {
+			parse_dxf_blocks(dxf[i]);
 		}
 		if (Section_name == "ENTITIES"){
 			parse_dxf_entities(dxf[i]);
 		}
-		dxf.shift();
+		
+		
 	}
+	//fertig
 }
 
 //Wandelt den gesamten Text in ein 2-Dimensionales-Array um. 
@@ -63,7 +71,7 @@ function text_in_zeilen_teilen(text){
 	return lines_final;
 }
 
-//Entfernt EOF und alles danach
+//Entfernt EOF
 function EOF_entfernen(dxf){
 	//Alles nach EOF entfernen
 	//console.log(dxf)
@@ -119,6 +127,52 @@ function layer(name){
 		return_id = id;
 	}
 	return return_id;
+}
+
+function parse_dxf_blocks(Data){
+	//message_to_main('echo','parse_blocks');
+	//message_to_main('echo',Data);
+var blocks = [];
+	while (Data.length > 1){
+		var temp_block = [];
+		Data.shift();	// 0 Section entfernen
+		while (Data[0][1] != "ENDBLK"){
+			temp_block.push(Data[0]);
+			Data.shift();
+		}
+		blocks.push(temp_block);
+		Data.shift(); //ENDSEC entfernen
+		while ((typeof Data[0] != 'undefined') && (Data[0][0] != "0")){
+		Data.shift();
+		}
+	}
+	for (var i = 0; i < blocks.length; i++){
+		parse_single_block(blocks[i]);
+	}
+}
+
+function parse_single_block(block_data){
+	var new_block_data = [];
+	var i = 0;
+	new_block_data[0] = [];
+	//message_to_main('echo', block_data);
+	for (var a = 0; a < block_data.length; a++){
+		if (block_data[a][0] == "0"){
+		i = i + 1;
+		new_block_data[i] = [];
+		}
+		new_block_data[i].push(block_data[a]); 
+	}
+	if (new_block_data.length >= 3) new_block_data.pop();
+	//message_to_main('echo',new_block_data);
+	var this_block = {}
+	this_block.handle = new_block_data[0][0][1];
+	this_block.elemente = [];
+	for (var a = 1; a < new_block_data.length;a++){
+		this_block.elemente.push(dxf_group_codes_parse(new_block_data[a]));
+	}
+	//message_to_main('echo',this_block);
+	available_blocks.push(this_block);
 }
 
 function parse_dxf_entities(Data){
@@ -184,16 +238,22 @@ function parse_single_entity(entity_name, single_entity){
 function dxf_group_codes_parse(daten){
 	var fertig = {};
 	while (daten.length != 0){
+		if (daten[0][0] == "0" ){ //Element Typ
+			fertig.entity_typ = daten[0][1];
+		}
 		if (daten[0][0] == "1" ){ //text erste 250 zeichen
 			fertig.text = daten[0][1];
 			fertig.text = fertig.text.slice(1,fertig.text.length).replace(/}/,"");
 		}
-		if (daten[0][0] == "8" ){ //layer_name
-			fertig.layer_name = daten[0][1];
-			//layer(fertig.layer_name);
+		if (daten[0][0] == "5" ){ //Block name
+			fertig.block_name = daten[0][1];
 		}
 		if (daten[0][0] == "6" ){ //line type
 			fertig.line_typ = daten[0][1];
+		}
+		if (daten[0][0] == "8" ){ //layer_name
+			fertig.layer_name = daten[0][1];
+			//layer(fertig.layer_name);
 		}
 		if (daten[0][0] == "62" ){ //farbe
 			fertig.color = daten[0][1];
