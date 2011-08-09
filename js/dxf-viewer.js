@@ -4,24 +4,29 @@ drawing = [];
 //Ein Assoziatives array  'Layer_name'->Layer_index
 layers = [];
 
+//Canvas Dimensiones -> Sollte automatisch gehen
 canvas_breite = 1000;
 canvas_hoehe = 600;
 
+//Standartwerte, werden für den ersten Frame verwendet, dann autoscale und redraw
 view_x = 150;
 view_y = canvas_hoehe/2;
 view_scale = 12;
 
+//Variablen in denen die Dimension des Modells gespeichert werden
 model_min_x = 0;
 model_max_x = 0;
 model_min_y = 0;
 model_max_y = 0;
 
+//Bem ersten Frame soll hinterher die Skala und der Ursprung angepasst werden
 auto_scale = true;
 
+
 function activate_controls(){
-
+	
 	add_layer_auswahl();
-
+	
 	document.getElementById('canvas').addEventListener('DOMMouseScroll', function(e)
 		{
 			if (e.detail > 0){
@@ -78,10 +83,7 @@ function mousemove(e){
 }
 
 function do_auto_scale(){
-	//console.log("min_y"+model_min_y+"max_y"+model_max_y+"min_x"+model_min_x+"max_x"+model_max_x)
 	auto_scale = false;
-	//ctx.fillStyle = "rgb(200,0,0)";
-    //ctx.fillRect (x(model_min_x), y(model_min_y), x(model_max_x), y(model_max_y));
 	ctx.beginPath();
 	ctx.arc(x(0)-2.5,y(0)-2.5,5,0,(Math.PI/180)*360,true);
 	ctx.stroke();
@@ -90,11 +92,10 @@ function do_auto_scale(){
 	var hoehe = model_max_y - model_min_y;
 	var scale_nach_hoehe = (canvas_hoehe-10)/hoehe;
 	if (scale_nach_hoehe < scale_nach_breite) {
-	view_scale = scale_nach_hoehe;
+		view_scale = scale_nach_hoehe;
 	} else {
-	view_scale = scale_nach_breite;
+		view_scale = scale_nach_breite;
 	}
-	console.log(view_scale);
 	view_x = - scale(model_min_x)+5;
 	view_y = (- scale(model_min_y))/2 + 5;	
 	redraw();
