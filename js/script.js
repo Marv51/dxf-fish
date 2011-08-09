@@ -57,11 +57,25 @@ console.log('Eventlisteners sind da!');
 
 function sprinkler_starten(){
 		$("#canvas").click(function(e){
-		console.log(e.clientX+" "+e.clientY);
+		//console.log(e.clientX+" "+e.clientY);
 		ctx.beginPath();
-		ctx.arc(e.layerX-2.5,e.layerY-2.5,5,0,(Math.PI/180)*360,true);
+		var x;
+		var y;
+		if (e.pageX || e.pageY) { 
+		  x = e.pageX;
+		  y = e.pageY;
+		}
+		else { 
+		  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+		  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+		} 
+		x -= document.getElementById('canvas').offsetLeft;
+		y -= document.getElementById('canvas').offsetTop;
+
+		ctx.arc(x-1,y-1,1,0,(Math.PI/180)*360,true);
+		ctx.fillStyle = "orange";
 		ctx.fill();
-		console.log(e);
+		//console.log(e);
 	});
 }
 
