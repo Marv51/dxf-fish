@@ -102,7 +102,7 @@ function do_auto_scale(){
 }
 
 function redraw(){
-	ctx.clearRect(0, 0, 1000, 600);
+	ctx.clearRect(0, 0, canvas_breite, canvas_hoehe);
 	//Für jedes Layer
 	//var i = 3;
 	//console.log( available_blocks);
@@ -200,6 +200,9 @@ var i = 0;
 			temp_elemente[a].org_y2 = temp_elemente[a].y2;
 			}
 		temp_elemente[a].y2 = element.y1 + rotate_y(temp_elemente[a].org_x2,temp_elemente[a].org_y2,element.start_winkel,temp_elemente[a].y_scale);
+		
+		//Probleme mit Winkeln und Gedrehten oder Gespiegelten Blöcken
+		
 		//console.log(temp_elemente[a]);
 		// if ((typeof temp_elemente[a].org_start_winkel == "undefined") && (element.start_winkel)){
 			// temp_elemente[a].org_start_winkel = temp_elemente[a].start_winkel;
@@ -251,9 +254,9 @@ function draw_text(element){
 
 function draw_arc(element){
 	ctx.beginPath();
-	console.log(element.start_winkel+" bis "+element.end_winkel+" org:"+element.org_start_winkel+" bis "+element.org_end_winkel );
-	var clockwise = false; //Aus Header auslesen!
-	ctx.arc(x(element.x1),y(element.y1),scale(element.radius),(Math.PI/180)*(180+element.start_winkel),(Math.PI/180)*(180+element.end_winkel),clockwise);
+	//console.log(element.start_winkel+" bis "+element.end_winkel+" org:"+element.org_start_winkel+" bis "+element.org_end_winkel );
+	var anticlockwise = true; //Aus Header auslesen!
+	ctx.arc(x(element.x1),y(element.y1),scale(element.radius),(Math.PI/180)*(360-element.start_winkel),(Math.PI/180)*(360-element.end_winkel),anticlockwise);
 	ctx.stroke();
 }
 
