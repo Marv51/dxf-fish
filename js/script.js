@@ -96,6 +96,9 @@ function message_from_worker(event){
 		 drawing = event.data.daten[0];
 		 layers = event.data.daten[1];
 		 available_blocks = event.data.daten[2];
+		 nicht_unterstuetzt = event.data.daten[3];
+		 //console.log(nicht_unterstuetzt);
+		 if (nicht_unterstuetzt.length != 0) alert("Folgende Elemente werden nicht unterstützt: " + nicht_unterstuetzt.toString());
 		 finish_loading();
 		 draw();
 		 return

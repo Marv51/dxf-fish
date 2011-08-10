@@ -6,6 +6,8 @@ layers = [];
 
 available_blocks = [];
 
+nicht_unterstuetzt = [];
+
 function message_to_main(cmd, daten){
 	self.postMessage({'cmd': cmd, 'daten': daten});
 }
@@ -13,7 +15,7 @@ function message_to_main(cmd, daten){
 self.onmessage = function(event) {
 	 if (event.data.cmd == 'laden'){
 	 dxf_laden(event.data.daten);
-	 message_to_main('fertig',[drawing,layers,available_blocks]);
+	 message_to_main('fertig',[drawing,layers,available_blocks,nicht_unterstuetzt]);
 	 self.close();
 	 return
 	 }
@@ -237,7 +239,13 @@ function parse_single_entity(entity_name, single_entity){
 		drawing[layer(fertig.layer_name)].push(fertig);
 		return
 	}
-	//console.log("Entitytyp wird nicht unterstuetzt:"+entity_name);
+	
+	for (var a = 0; a < nicht_unterstuetzt.length;a++){
+		if (nicht_unterstuetzt[a] == fertig.type){
+		return
+		}
+	}
+	nicht_unterstuetzt.push(fertig.type);
 }
 
 function dxf_group_codes_parse(daten){
