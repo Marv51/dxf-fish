@@ -106,6 +106,7 @@ function redraw(){
 	//Für jedes Layer
 	//var i = 3;
 	//console.log( available_blocks);
+	draw_massstab();
 	for (var i = 0; drawing.length > i; i++){
 		if (layers[i].active){
 			for (var a = 0; drawing[i].length > a; a++){
@@ -316,4 +317,19 @@ function y(wert){
 
 function scale(wert){
 	return wert*view_scale;
+}
+
+function draw_massstab()
+{
+ctx.beginPath();
+ctx.moveTo(0, canvas_hoehe-1);
+ctx.lineTo(scale(10), canvas_hoehe-1);
+for (var a = 0; a <= 10; a++){
+if ( a % 10 == 0 ){ var strich = 7 } 
+else { if ( a % 5 == 0 ) {var strich = 5;}
+else { var strich = 2;} };
+ctx.moveTo(scale(a), canvas_hoehe-1);
+ctx.lineTo(scale(a), canvas_hoehe-(1+strich));
+}
+ctx.stroke();
 }
