@@ -58,6 +58,7 @@ function parse_sections(dxf) {
 	//fertig
 }
 
+
 //Wandelt den gesamten Text in ein 2-Dimensionales-Array um. 
 //Zeile 1 -> Array[0][0] ; Z 2 -> [0][1]; Z3->1,0; Z4->1,1; Z5->2,0; 
 function text_in_zeilen_teilen(text){
@@ -84,18 +85,18 @@ function EOF_entfernen(dxf){
 	return dxf;
 }
 
+
 //Unterteilt dxf in Sections und entfernt die Sections markierungen
 function split_in_sections(dxf){
 var sections = [];
-	while (dxf.length > 1){
+	for (var i = 0; i < dxf.length; i++){
 		var temp_sec = [];
-		dxf.shift();	// 0 Section entfernen
-		while (dxf[0][1] != "ENDSEC"){
-			temp_sec.push(dxf[0]);
-			dxf.shift();
+		i++;	// 0 Section entfernen
+		while (dxf[i][1] != "ENDSEC"){
+			temp_sec.push(dxf[i]);
+			i++;
 		}
 		sections.push(temp_sec);
-		dxf.shift(); //ENDSEC entfernen
 	}
 	return sections;
 }
