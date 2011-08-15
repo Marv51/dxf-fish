@@ -136,23 +136,25 @@ function parse_dxf_blocks(Data){
 	//message_to_main('echo','parse_blocks');
 	//message_to_main('echo',Data);
 var blocks = [];
-	while (Data.length > 1){
+var i = 0;
+	while (i < Data.length){
 		var temp_block = [];
-		Data.shift();	// 0 Section entfernen
-		while (Data[0][1] != "ENDBLK"){
-			temp_block.push(Data[0]);
-			Data.shift();
+		i++;	// 0 Section entfernen
+		while (Data[i][1] != "ENDBLK"){
+			temp_block.push(Data[i]);
+			i++;
 		}
 		blocks.push(temp_block);
-		Data.shift(); //ENDSEC entfernen
-		while ((typeof Data[0] != 'undefined') && (Data[0][0] != "0")){
-		Data.shift();
+		i++; //ENDSEC entfernen
+		while ((typeof Data[i] != 'undefined') && (Data[i][0] != "0")){
+			i++;
 		}
 	}
 	for (var i = 0; i < blocks.length; i++){
 		parse_single_block(blocks[i]);
 	}
 }
+
 
 function parse_single_block(block_data){
 	var new_block_data = [];
