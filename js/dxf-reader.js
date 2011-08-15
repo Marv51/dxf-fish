@@ -6,7 +6,8 @@ layers = [];
 
 available_blocks = [];
 
-nicht_unterstuetzt = [];
+meta = [];
+meta['nicht_unterstuetzt'] = [];
 
 function message_to_main(cmd, daten){
 	self.postMessage({'cmd': cmd, 'daten': daten});
@@ -14,8 +15,13 @@ function message_to_main(cmd, daten){
 
 self.onmessage = function(event) {
 	 if (event.data.cmd == 'laden'){
+	 var jetzt = new Date();
+	 meta['start_zeit'] = jetzt;
 	 dxf_laden(event.data.daten);
-	 message_to_main('fertig',[drawing,layers,available_blocks,nicht_unterstuetzt]);
+	 jetzt = new Date();
+	 meta['stop_zeit'] = jetzt;
+	 meta['dauer'] = (meta['stop_zeit'].getTime() - meta['start_zeit'].getTime())  /1000;
+	 message_to_main('fertig',[drawing,layers,available_blocks,meta]);
 	 self.close();
 	 return
 	 }
@@ -25,6 +31,7 @@ self.onmessage = function(event) {
 //Einstieg in die Verarbeitung einer dxf-Datei 
 // Bekommt dxf-Datei als Text 
 function dxf_laden(text){
+	
 	var dxf = text_in_zeilen_teilen(text);
 	delete(text);
 	dxf = EOF_entfernen(dxf);
@@ -155,6 +162,28 @@ var i = 0;
 	}
 }
 
+function parse_dxf_entities(Data){
+	//Vom Anfang zum Ende
+	//0 Type
+	
+	// wenn Type = Polyline -> Unterentities bis SEQEND danach löschen bis 0 Type
+	//0 Type
+	//POLYLINES sind ein Problem!
+	var i = 0;
+	while (i <Data.length){
+		var temp_entity = [];
+		var name;
+		//if (Data[0][0] != "0") console.log("Entities Error 1");
+		name = Data[i][1]
+		i++; //0 Type Zeile löschen
+		while ((i < Data.length) && (Data[i][0] != "0")){
+			temp_entity.push(Data[i]);
+			i++;
+		}
+		parse_single_entity(name, temp_entity);
+	}
+}
+
 
 function parse_single_block(block_data){
 	var new_block_data = [];
@@ -163,7 +192,7 @@ function parse_single_block(block_data){
 	//message_to_main('echo', block_data);
 	for (var a = 0; a < block_data.length; a++){
 		if (block_data[a][0] == "0"){
-		i = i + 1;
+		i++;
 		new_block_data[i] = [];
 		}
 		new_block_data[i].push(block_data[a]); 
@@ -182,35 +211,6 @@ function parse_single_block(block_data){
 	}
 	//message_to_main('echo',this_block);
 	available_blocks.push(this_block);
-}
-
-function parse_dxf_entities(Data){
-	//Vom Anfang zum Ende
-	//0 Type
-	
-	// wenn Type = Polyline -> Unterentities bis SEQEND danach löschen bis 0 Type
-	//0 Type
-	//POLYLINES sind ein Problem!
-	while (Data.length > 1){
-		var temp_entity = [];
-		var name;
-		//if (Data[0][0] != "0") console.log("Entities Error 1");
-		name = Data[0][1]
-		Data.shift(); //0 Type Zeile löschen
-		while ((Data[0][0] != "0") && (Data.length > 1)){
-			temp_entity.push(Data[0]);
-			Data.shift();
-		}
-		parse_single_entity(name, temp_entity);
-	}
-	// if (name == 'POLYLINE'){
-		// entity.children = [];
-		// var temp_entity2 = [];
-		// while ((Data[0][0] != "0") || (Data[0][1] != "SEQEND")) {
-			// while (Data[0][0] != "0"){
-				// temp_entity.push(Data[0]);
-			// }
-		// }
 }
 
 function parse_dxf_tables(Data){
@@ -243,12 +243,12 @@ function parse_single_entity(entity_name, single_entity){
 		return
 	}
 	
-	for (var a = 0; a < nicht_unterstuetzt.length;a++){
-		if (nicht_unterstuetzt[a] == fertig.type){
+	for (var a = 0; a < meta['nicht_unterstuetzt'].length;a++){
+		if (meta['nicht_unterstuetzt'][a] == fertig.type){
 		return
 		}
 	}
-	nicht_unterstuetzt.push(fertig.type);
+	meta['nicht_unterstuetzt'].push(fertig.type);
 }
 
 function dxf_group_codes_parse(daten){
