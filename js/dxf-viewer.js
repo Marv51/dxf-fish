@@ -158,7 +158,14 @@ function element_zeichnen(element){
 		draw_insert(element);
 		return
 	}
-
+	if (element.type == "POLYLINE"){
+		draw_polyline(element);
+		return
+	}
+	if (element.type == "LWPOLYLINE"){
+		draw_lwpolyline(element);
+		return
+	}
 }
 
 function draw_insert(element){
@@ -215,6 +222,38 @@ var i = 0;
 		// }
 		element_zeichnen(temp_elemente[a]);
 	}	
+}
+
+function draw_polyline(element){
+	ctx.beginPath();
+	draw_vertex(element.elemente[0], true);
+	for (var i = 1; i < element.elemente.length; i++){
+		draw_vertex(element.elemente[i], false);
+	}
+	if (element.closed == true){
+		draw_vertex(element.elemente[0],false);
+	}
+	ctx.stroke();
+}
+
+function draw_lwpolyline(element){
+	console.log("lwpolyline");
+	ctx.beginPath();
+	ctx.moveTo(x(element.x1),y(element.y1));
+	for (var i = 0; i < element.x1_extra.length; i++){
+		ctx.lineTo(x(element.x1_extra[i]), y(element.y1_extra[i]));
+	}
+	if (element.closed == true){
+		ctx.lineTo(x(element.x1),y(element.y1));
+	}
+	ctx.stroke();
+}
+
+function draw_vertex(element, first){
+	if (first)
+	ctx.moveTo(x(element.x1),y(element.y1));
+	else
+	ctx.lineTo(x(element.x1),y(element.y1));
 }
 
 function rotate_x(x_org,y_org,a_deg,s){

@@ -9,6 +9,10 @@ available_blocks = [];
 meta = [];
 meta['nicht_unterstuetzt'] = [];
 
+in_polyline = false;
+aktuelle_polyline_id = null;
+aktuelle_polyline_layer = null;
+
 function message_to_main(cmd, daten){
 	self.postMessage({'cmd': cmd, 'daten': daten});
 }
@@ -59,8 +63,6 @@ function parse_sections(dxf) {
 		if (Section_name == "ENTITIES"){
 			parse_dxf_entities(dxf[i]);
 		}
-		
-		
 	}
 	//fertig
 }
@@ -170,11 +172,12 @@ function parse_dxf_entities(Data){
 	//0 Type
 	//POLYLINES sind ein Problem!
 	var i = 0;
-	while (i <Data.length){
+	while (i < Data.length){
 		var temp_entity = [];
 		var name;
 		//if (Data[0][0] != "0") console.log("Entities Error 1");
-		name = Data[i][1]
+		name = Data[i][1];
+		if (name == "SEQEND") in_polyline = false;
 		i++; //0 Type Zeile löschen
 		while ((i < Data.length) && (Data[i][0] != "0")){
 			temp_entity.push(Data[i]);
@@ -218,9 +221,9 @@ function parse_dxf_tables(Data){
 }
 
 function parse_single_entity(entity_name, single_entity){
-	//console.log(entity_name);
 	var fertig = dxf_group_codes_parse(single_entity)
 	fertig.type = entity_name;
+
 
 	//Hier alle Entity typen auflisten
 
@@ -230,16 +233,33 @@ function parse_single_entity(entity_name, single_entity){
 	// }
 
 	// var daten = dxf_group_codes_parse(single_entity);
-
-
 	if     ((fertig.type == "TEXT")  ||
 			(fertig.type == "MTEXT") ||
 			(fertig.type == "ARC")   ||
 			(fertig.type == "CIRCLE")||
 			(fertig.type == "XLINE") ||
 			(fertig.type == "LINE")  ||
+			(fertig.type == "VERTEX")  ||
+			(fertig.type == "POLYLINE")  ||
+			(fertig.type == "LWPOLYLINE")  ||
 			(fertig.type == "INSERT")){
-		drawing[layer(fertig.layer_name)].push(fertig);
+		if (in_polyline == true){
+			drawing[layer(aktuelle_polyline_layer)][aktuelle_polyline_id].elemente.push(fertig);
+		}else {
+		var id = (drawing[layer(fertig.layer_name)].push(fertig) - 1);
+		//message_to_main('echo', id);
+		}
+		if ((fertig.type == "POLYLINE")){
+			in_polyline = true;
+			aktuelle_polyline_id = id;
+			aktuelle_polyline_layer = fertig.layer_name;
+			drawing[layer(aktuelle_polyline_layer)][aktuelle_polyline_id].elemente = [];
+			//message_to_main('echo', drawing);
+		}
+		if (fertig.type == "SEQEND"){
+			in_polyline = false;
+			//message_to_main('echo', 'SEQEND');
+		}
 		return
 	}
 	
@@ -279,13 +299,25 @@ function dxf_group_codes_parse(daten){
 			fertig.color = daten[i][1];
 		}
 		if (daten[i][0] == "10" ){//x1
-			fertig.x1 = parseFloat(daten[i][1]);
+			if (typeof fertig.x1 == "undefined")
+			fertig.x1 = parseFloat(daten[i][1])
+			else if (typeof fertig.x1_extra == "undefined"){
+			fertig.x1_extra = [parseFloat(daten[i][1])];
+			}else{
+			fertig.x1_extra.push(parseFloat(daten[i][1]));
+			}
 		}
 		if (daten[i][0] == "11" ){//x2
 			fertig.x2 = parseFloat(daten[i][1]);
 		}
 		if (daten[i][0] == "20" ){ //y1
-			fertig.y1 = parseFloat(daten[i][1]);
+			if (typeof fertig.y1 == "undefined")
+			fertig.y1 = parseFloat(daten[i][1])
+			else if (typeof fertig.y1_extra == "undefined"){
+			fertig.y1_extra = [parseFloat(daten[i][1])];
+			}else{
+			fertig.y1_extra.push(parseFloat(daten[i][1]))
+			}
 		}
 		if (daten[i][0] == "21" ){ //y2
 			fertig.y2 = parseFloat(daten[i][1]);
@@ -307,6 +339,10 @@ function dxf_group_codes_parse(daten){
 		}
 		if (daten[i][0] == "51" ){ //end winkel
 			fertig.end_winkel =  parseFloat(daten[i][1]);
+		}
+		if (daten[i][0] == "70" ){ //Polyline Optionen 1 = closed
+			if (daten[i][1] == "1")
+			fertig.closed = true;
 		}
 		if (daten[i][0] == "71" ){ //Verknüpfungspunkt TOP: 1Left 2Center 3Right MIDDLE: 4L 5C 6R Bottom: 7L 8C 9R
 			fertig.attachment_p = daten[i][1];
