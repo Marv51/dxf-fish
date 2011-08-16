@@ -76,7 +76,7 @@ function text_in_zeilen_teilen(text){
 	for ( var a = 0; a < (dxf_in_lines.length-1); a = a + 2){
 		//Leerzeichen erden entfernt, ob das Sinn macht?
 		dxf_in_lines[a] = dxf_in_lines[a].replace(/\s/g, "");
-		dxf_in_lines[a+1] = dxf_in_lines[a+1].replace(/\s/g, "");
+		dxf_in_lines[a+1] = dxf_in_lines[a+1].replace(/^\s+/g, "");
 		
 		lines_final.push(Array(dxf_in_lines[a],dxf_in_lines[a+1]));
 	}
@@ -280,7 +280,7 @@ function dxf_group_codes_parse(daten){
 		}
 		if (daten[i][0] == "1" ){ //text erste 250 zeichen
 			fertig.text = daten[i][1];
-			fertig.text = fertig.text.slice(1,fertig.text.length).replace(/}/,"");
+			fertig.text = fertig.text.replace(/{|}/g,"");
 		}
 		if (daten[i][0] == "2" ){ //Insert Block Name
 			fertig.insert_block = daten[i][1];

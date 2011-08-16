@@ -190,8 +190,6 @@ var i = 0;
 		if ( typeof temp_elemente[a].org_x1 == "undefined" ) {
 			temp_elemente[a].org_x1 = temp_elemente[a].x1;
 			}
-		//console.log(temp_elemente[a].start_winkel);
-		//console.log(winkel_in_rad);
 		temp_elemente[a].x1 = element.x1 + rotate_x(temp_elemente[a].org_x1,temp_elemente[a].org_y1,element.start_winkel,temp_elemente[a].x_scale);
 		
 		if ( typeof temp_elemente[a].org_x2 == "undefined" ) {
