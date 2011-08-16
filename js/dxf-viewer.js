@@ -237,7 +237,6 @@ function draw_polyline(element){
 }
 
 function draw_lwpolyline(element){
-	console.log("lwpolyline");
 	ctx.beginPath();
 	ctx.moveTo(x(element.x1),y(element.y1));
 	for (var i = 0; i < element.x1_extra.length; i++){
