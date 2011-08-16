@@ -208,18 +208,15 @@ var i = 0;
 			temp_elemente[a].org_y2 = temp_elemente[a].y2;
 			}
 		temp_elemente[a].y2 = element.y1 + rotate_y(temp_elemente[a].org_x2,temp_elemente[a].org_y2,element.start_winkel,temp_elemente[a].y_scale);
-		
-		//Probleme mit Winkeln und Gedrehten oder Gespiegelten Blöcken
-		
-		//console.log(temp_elemente[a]);
-		// if ((typeof temp_elemente[a].org_start_winkel == "undefined") && (element.start_winkel)){
-			// temp_elemente[a].org_start_winkel = temp_elemente[a].start_winkel;
-			// temp_elemente[a].start_winkel = temp_elemente[a].start_winkel + element.start_winkel;
-		// }
-		// if ((typeof temp_elemente[a].org_end_winkel == "undefined") && (element.end_winkel)){
-			// temp_elemente[a].org_end_winkel = temp_elemente[a].end_winkel;
-			// temp_elemente[a].end_winkel = temp_elemente[a].end_winkel + element.start_winkel;
-		// }
+
+		 if ((typeof temp_elemente[a].org_start_winkel == "undefined") && (element.start_winkel)){
+			 temp_elemente[a].org_start_winkel = temp_elemente[a].start_winkel;
+			 temp_elemente[a].start_winkel = temp_elemente[a].start_winkel + element.start_winkel;
+		 }
+		 if ((typeof temp_elemente[a].org_end_winkel == "undefined") && (element.start_winkel)){
+			 temp_elemente[a].org_end_winkel = temp_elemente[a].end_winkel;
+			 temp_elemente[a].end_winkel = temp_elemente[a].end_winkel + element.start_winkel;
+		 }
 		element_zeichnen(temp_elemente[a]);
 	}	
 }
