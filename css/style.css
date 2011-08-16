@@ -7,5 +7,65 @@ margin-top: -16px;
 }
 
 #canvas{
-border: 2px solid black;
+margin: 0;
+padding: 0;
+}
+body, html{
+margin: 0;
+padding: 0;
+}
+
+#layer_auswahl_container{
+height: 0;
+width: 100%;
+overflow: hidden;
+-moz-transition-property: height;
+-moz-transition-duration: 1s;
+}
+#layer_auswahl_container div span{
+padding-top: 2px;
+}
+
+#oeffnen{
+display: none;
+}
+
+#layers{
+width: 200px;
+}
+#menu{
+position: absolute;
+left: 0px;
+top: 0px;
+}
+#menu > div {
+float: left;
+background-color: #D9D9C3;
+border-bottom: 1px solid gray;
+border-right: 1px solid gray;
+padding: 5px;
+}
+
+#menu > div a{
+text-decoration: none;
+color: black;
+}
+
+#layer_button{
+width: 100%;
+}
+.layer{
+display: block;
+border-bottom: 1px solid gray;
+}
+
+#lassmichfallen{
+position: absolute;
+border-radius: 15px;
+border: 2px dashed black;
+left: 50%;
+top: 50%;
+margin-left: -165px;
+margin-top: -25px;
+padding: 15px;
 }

@@ -1,3 +1,5 @@
+var canvas;
+
 function dragenter(e) {
   $("#lassmichfallen").fadeIn();
   e.stopPropagation();
@@ -43,7 +45,10 @@ function handleFiles(files) {
 }
 
 $(function(){
-var canvas = document.getElementById('canvas');
+$('#oeffnen')
+canvas = document.getElementById('canvas');
+ canvas.width = window.innerWidth -3;
+ canvas.height = window.innerHeight -3; 
  ctx = canvas.getContext('2d');
 var dropbox = document.body;
 dropbox.addEventListener("dragenter", dragenter, false);

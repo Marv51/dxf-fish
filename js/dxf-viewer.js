@@ -4,13 +4,9 @@ drawing = [];
 //Ein Assoziatives array  'Layer_name'->Layer_index
 layers = [];
 
-//Canvas Dimensiones -> Sollte automatisch gehen
-canvas_breite = 1000;
-canvas_hoehe = 600;
-
 //Standartwerte, werden für den ersten Frame verwendet, dann autoscale und redraw
 view_x = 150;
-view_y = canvas_hoehe/2;
+view_y = 400;
 view_scale = 12;
 
 //Variablen in denen die Dimension des Modells gespeichert werden
@@ -59,7 +55,11 @@ function activate_controls(){
 	document.getElementById('canvas').addEventListener('mouseup', function(e){
 			document.getElementById('canvas').removeEventListener('mousemove', mousemove, false);
 		}, false);	
-		
+	window.addEventListener('resize', function(e){
+			canvas.width = window.innerWidth-3;
+			canvas.height = window.innerHeight-3;
+			redraw();
+		}, false)
 	$('.layer_auswahl').change(function(e){
 			var layer_id = e.currentTarget.id.substr(6,(e.currentTarget.id.length-1));
 			if (layers[layer_id].active == true){
@@ -88,9 +88,9 @@ function do_auto_scale(){
 	ctx.arc(x(0)-2.5,y(0)-2.5,5,0,(Math.PI/180)*360,true);
 	ctx.stroke();
 	var breite = model_max_x - model_min_x;
-	var scale_nach_breite = (canvas_breite-10)/breite;
+	var scale_nach_breite = (canvas.width-10)/breite;
 	var hoehe = model_max_y - model_min_y;
-	var scale_nach_hoehe = (canvas_hoehe-10)/hoehe;
+	var scale_nach_hoehe = (canvas.height-10)/hoehe;
 	if (scale_nach_hoehe < scale_nach_breite) {
 		view_scale = scale_nach_hoehe;
 	} else {
@@ -102,7 +102,7 @@ function do_auto_scale(){
 }
 
 function redraw(){
-	ctx.clearRect(0, 0, canvas_breite, canvas_hoehe);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	//Für jedes Layer
 	//var i = 3;
 	//console.log( available_blocks);
@@ -119,10 +119,16 @@ function redraw(){
 function add_layer_auswahl(){
 	var text = ""
 	for (var m = 0; m < layers.length;m++){
-		text = text + "<input type='checkbox' checked='checked' class='layer_auswahl' id='layer-"+m+"' value='"+layers[m].name+"' />"+layers[m].name+"</br>";
+		text = text + "<span class='layer'><input type='checkbox' checked='checked' class='layer_auswahl' id='layer-"+m+"' value='"+layers[m].name+"' />"+layers[m].name.replace(/_/g," ")+"</span>";
 	}
-	$("body").append(text);
+	$("#menu").append("<div id='layers'><div id='layer_button'>Ebenen</div><div id='layer_auswahl_container'><div id='layer_messen'>"+text+"</div></div></div>");
+	$("#layer_button").toggle(function(){
+	$("#layer_auswahl_container").css("height", document.getElementById('layer_messen').clientHeight + "px");
+	},function(){
+	$("#layer_auswahl_container").css("height","0");
+	});
 }
+
 
 function draw(){
 	redraw();
@@ -307,31 +313,6 @@ function draw_line(element){
 	ctx.stroke();
 }
 
-// function dxf_polyline(daten){
-	// while (daten[0][0] != "0"){
-		// //Polyline_Daten interpretieren
-		// daten.shift();
-	// }
-	// ctx.beginPath();
-	// daten.shift();
-	// var vertex_daten = Array();
-	// while (daten.length > 0){
-		// if (daten[0][0] == "0"){
-			// dxf_vertex(vertex_daten);
-			// vertex_daten = Array()
-		// } else {
-			// vertex_daten.push(daten[0])
-		// }
-		// daten.shift();
-	// }
-// }
-
-// function dxf_vertex(daten){
-	// daten = dxf_group_codes_parse(daten);
-	// ctx.lineTo(x(daten['10']),y(daten['20']));
-	// ctx.stroke();
-// }
-
 function x(wert){
 	if (wert < model_min_x) {
 		model_min_x = wert;
@@ -355,14 +336,14 @@ function scale(wert){
 function draw_massstab()
 {
 ctx.beginPath();
-ctx.moveTo(0, canvas_hoehe-1);
-ctx.lineTo(scale(10), canvas_hoehe-1);
+ctx.moveTo(0, canvas.height-1);
+ctx.lineTo(scale(10), canvas.height-1);
 for (var a = 0; a <= 10; a++){
 if ( a % 10 == 0 ){ var strich = 7 } 
 else { if ( a % 5 == 0 ) {var strich = 5;}
 else { var strich = 2;} };
-ctx.moveTo(scale(a), canvas_hoehe-1);
-ctx.lineTo(scale(a), canvas_hoehe-(1+strich));
+ctx.moveTo(scale(a), canvas.height-1);
+ctx.lineTo(scale(a), canvas.height-(1+strich));
 }
 ctx.stroke();
 }
