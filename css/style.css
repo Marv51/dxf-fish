@@ -1,3 +1,15 @@
+.meldung{
+width: 100%;
+background-color: yellow;
+margin-top: -40px;
+height: 40px;
+}
+
+.meldung_schliessen{
+display: inline;
+padding: 5px;
+}
+
 #loader{
 position: fixed;
 left: 50%;

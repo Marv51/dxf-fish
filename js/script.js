@@ -57,7 +57,6 @@ dropbox.addEventListener("drop", drop, false);
 dropbox.addEventListener("dragexit", dragleave, false);
 dropbox.addEventListener("dragend", dragleave, false);
 console.log('Eventlisteners sind da!');
-
 });
 
 function sprinkler_starten(){
@@ -103,7 +102,10 @@ function message_from_worker(event){
 		 available_blocks = event.data.daten[2];
 		 meta = event.data.daten[3];
 		 //console.log(nicht_unterstuetzt);
-		 if (meta['nicht_unterstuetzt'].length != 0) alert("Folgende Elemente werden nicht unterstützt: " + meta['nicht_unterstuetzt'].toString());
+		 if (meta['nicht_unterstuetzt'].length != 0) $('body').append("<div class='meldung'><div class='meldung_schliessen'>x</div>Folgende Elemente werden nicht unterstützt: " + meta['nicht_unterstuetzt'].toString());
+		 $(".meldung_schliessen").click(function(){
+			$(".meldung").remove();
+		});
 		 console.log('Verarbeitungszeit: ' + meta['dauer']);
 		 finish_loading();
 		 draw();
