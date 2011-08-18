@@ -2,6 +2,11 @@ var canvas;
 
 var hooks = [];
 
+//Plugin API
+//hook(name[, argumente]); aufrufen um alle mit register_hook
+// registrierten Funktionen auszuführen
+// Argumente sind freiwillig und werden in beliebiger Anzahl
+// an die Funktion weitergegeben
 function hook(name){
 	if (typeof hooks[name] != "undefined"){
 		for (var a = 0; hooks[name].length > a; a++){
@@ -9,21 +14,17 @@ function hook(name){
 		}
 	}
 }
-
+//Plugin API
+//register_hook(hook_name, funktions_name)
+//In Addon aufrufen um Funktion mit Name auszuführen
 function register_hook(name, function_name){
-	console.log("Funtion Registriert:"+function_name)
 	if (typeof hooks[name] == "undefined"){
 		hooks[name] = [];
 	}
 	hooks[name].push(function_name);
-	
-console.log(hooks);
 }
-
-function load_script(datei){
-document.write("<script type='text/javascript' src='"+datei+"'></script>");
-}
-
+//Script mit "Datei" als Name laden.
+// Datei kann relative Pfade zum Stammverzeichnis enthalten
 function load_script(datei){
 document.write("<script type='text/javascript' src='"+datei+"'></script>");
 }
