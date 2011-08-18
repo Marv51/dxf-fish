@@ -1,15 +1,47 @@
 var canvas;
 
+var hooks = [];
+
+function hook(name){
+	if (typeof hooks[name] != "undefined"){
+		for (var a = 0; hooks[name].length > a; a++){
+		window[hooks[name][a]](hook.arguments);
+		}
+	}
+}
+
+function register_hook(name, function_name){
+	console.log("Funtion Registriert:"+function_name)
+	if (typeof hooks[name] == "undefined"){
+		hooks[name] = [];
+	}
+	hooks[name].push(function_name);
+	
+console.log(hooks);
+}
+
+function sqr(wert){
+return wert*wert;
+}
+
+function un_komma(string){
+return string.replace(/\,/,".");
+}
+
+function komma(number){
+return number.replace(/\./,",");
+}
+
 function dragenter(e) {
-  $("#lassmichfallen").fadeIn();
-  e.stopPropagation();
-  e.preventDefault();
+	$("#lassmichfallen").fadeIn();
+	e.stopPropagation();
+	e.preventDefault();
 }
 
 function dragover(e) {
-  $("#lassmichfallen").stop().fadeIn();
-  e.stopPropagation();
-  e.preventDefault();
+	$("#lassmichfallen").stop().fadeIn();
+	e.stopPropagation();
+	e.preventDefault();
 }
 
 function dragleave(e) {
@@ -17,7 +49,6 @@ function dragleave(e) {
 }
 
 function drop(e) {
-//alert('drop');
 	var dropbox = document.body;
 	dropbox.removeEventListener("dragenter", dragenter, false);
 	dropbox.removeEventListener("dragover", dragover, false);
@@ -45,10 +76,9 @@ function handleFiles(files) {
 }
 
 $(function(){
-$('#oeffnen')
 canvas = document.getElementById('canvas');
- canvas.width = window.innerWidth -3;
- canvas.height = window.innerHeight -3; 
+ canvas.width = window.innerWidth -15;
+ canvas.height = window.innerHeight -15; 
  ctx = canvas.getContext('2d');
 var dropbox = document.body;
 dropbox.addEventListener("dragenter", dragenter, false);
@@ -59,10 +89,7 @@ dropbox.addEventListener("dragend", dragleave, false);
 console.log('Eventlisteners sind da!');
 });
 
-function sprinkler_starten(){
-		$("#canvas").click(function(e){
-		//console.log(e.clientX+" "+e.clientY);
-		ctx.beginPath();
+function wo_click(e){
 		var x;
 		var y;
 		if (e.pageX || e.pageY) { 
@@ -75,20 +102,15 @@ function sprinkler_starten(){
 		} 
 		x -= document.getElementById('canvas').offsetLeft;
 		y -= document.getElementById('canvas').offsetTop;
-
-		ctx.arc(x-1,y-1,1,0,(Math.PI/180)*360,true);
-		ctx.fillStyle = "orange";
-		ctx.fill();
-		//console.log(e);
-	});
+		return [x,y];
 }
 
 function dxf_lesen(text){
-worker = new Worker("js/dxf-reader.js");
-worker.addEventListener('message',message_from_worker, false);
-worker.addEventListener('error',error_in_worker, false);
-message_to_worker('laden',text);
-show_loading();
+	worker = new Worker("js/dxf-reader.js");
+	worker.addEventListener('message',message_from_worker, false);
+	worker.addEventListener('error',error_in_worker, false);
+	message_to_worker('laden',text);
+	show_loading();
 }
 
 function message_to_worker(cmd, daten){
@@ -101,7 +123,6 @@ function message_from_worker(event){
 		 layers = event.data.daten[1];
 		 available_blocks = event.data.daten[2];
 		 meta = event.data.daten[3];
-		 //console.log(nicht_unterstuetzt);
 		 if (meta['nicht_unterstuetzt'].length != 0) $('body').append("<div class='meldung'><div class='meldung_schliessen'>x</div>Folgende Elemente werden nicht unterstützt: " + meta['nicht_unterstuetzt'].toString());
 		 $(".meldung_schliessen").click(function(){
 			$(".meldung").remove();
@@ -121,10 +142,10 @@ function error_in_worker(){
 }
 
 function show_loading(){
-$('body').addClass("overlay").append("<img id='loader' src='images/ajax-loader.gif' />");
+	$('body').addClass("overlay").append("<img id='loader' src='images/ajax-loader.gif' />");
 }
 
 function finish_loading(){
-$("#loader").remove();
-$('body').removeClass("overlay");
+	$("#loader").remove();
+	$('body').removeClass("overlay");
 }

@@ -1,13 +1,22 @@
 .meldung{
-width: 100%;
-background-color: yellow;
-margin-top: -40px;
-height: 40px;
+width: 99%;
+background-color: #FAFA20;
+border-top: 1px solid black;
+margin-top: -21px;
+height: 20px;
+z-index: 10000;
+position: absolute;
+top: 100%;
+left: 0px;
 }
 
 .meldung_schliessen{
 display: inline;
 padding: 5px;
+}
+
+.active{
+background-color: #B0B0AE !important;
 }
 
 #loader{
@@ -27,14 +36,17 @@ margin: 0;
 padding: 0;
 }
 
-#layer_auswahl_container{
+.submenu{
 height: 0;
 width: 100%;
 overflow: hidden;
 -moz-transition-property: height;
 -moz-transition-duration: 1s;
+-webkit-transition-property: height;
+-webkit-transition-duration: 1s;
 }
-#layer_auswahl_container div span{
+
+.submenu div span{
 padding-top: 2px;
 }
 
@@ -66,7 +78,7 @@ color: black;
 #layer_button{
 width: 100%;
 }
-.layer{
+.submenuitem{
 display: block;
 border-bottom: 1px solid gray;
 }
