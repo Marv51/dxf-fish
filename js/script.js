@@ -20,6 +20,18 @@ function register_hook(name, function_name){
 console.log(hooks);
 }
 
+function load_script(datei){
+document.write("<script type='text/javascript' src='"+datei+"'></script>");
+}
+
+function load_script(datei){
+document.write("<script type='text/javascript' src='"+datei+"'></script>");
+}
+
+function load_css(datei){
+document.write('<link rel="stylesheet" type="text/css" media="screen" href="'+datei+'">');
+}
+
 function sqr(wert){
 return wert*wert;
 }
