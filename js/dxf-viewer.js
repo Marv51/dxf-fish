@@ -161,7 +161,6 @@ function redraw(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	//Für jedes Layer
 	//var i = 3;
-	//console.log( available_blocks);
 	draw_massstab();
 	for (var i = 0; drawing.length > i; i++){
 		if (layers[i].active){
